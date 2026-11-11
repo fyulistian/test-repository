@@ -14,23 +14,23 @@
 
 | Item | Project | Status | Notes |
 |------|---------|--------|-------|
-| <Item> | <Project> | <Status> | <Notes> |
+| Sample Item | Project | Status | Notes |
 
 ### ✅ Recently Completed
 
 | Date | Item | Project | Notes |
 |------|------|---------|-------|
-| <Date> | <Item> | <Project> | <Notes> |
-| <Date> | <Item> | <Project> | <Notes> |
-| <Date> | <Item> | <Project> | <Notes> |
-| <Date> | <Item> | <Project> | <Notes> |
+| Sample Date | Sample Item | Project | Notes |
+| Sample Date | Sample Item | Project | Notes |
+| Sample Date | Sample Item | Project | Notes |
+| Sample Date | Sample Item | Project | Notes |
 
 ### 🧱 Blockers
 
 | Blocker | Affects | Notes |
 |---------|---------|-------|
-| <Blocker> | <Affects> | <Note> |
-| <Blocker> | <Affects> | <Note> |
+| Sample Blocker | Affects | Notes |
+| Sample Blocker | Affects | Notes |
 
 ---
 
