@@ -1,8 +1,6 @@
 # Dev Tracker — Daily Journal & Activity Log
 
-> **For AI tools**: Read the `## Current Work` section first for active tasks and blockers,
-> then use the rest of this file as the journal generation template.
-> Full generation workflow is in `CLAUDE.md` (same folder).
+> **For AI tools (`Claude Code` / Local AI)**: Read the `## Current Work` section first for active tasks and blockers, then use the rest of this file as the structural reference and journal generation template. Full workflow definitions reside in `CLAUDE.md`.
 
 ---
 
@@ -34,22 +32,88 @@
 
 ---
 
-## 📁 Journal File Convention
+## 🏗️ Repository Overview & Architecture
+
+The `dev-tracker` repository is engineered for automated daily developer journaling, precise activity tracking, and streamlined performance review artifact generation. It enforces strict folder hierarchies, typed git conventions, and seamless integration with local AI coding assistants.
 
 ```
-journals/
-  2026/
-    05/
-      2026-05-23.md      ← YYYY-MM-DD.md
-activity/
-  2026-05-23/
-    <page-or-topic>/     ← kebab-case, short name
-      files/             ← .html files (v1, v2, fix)
-      storybook/         ← storybook HTML samples
-      component/         ← screenshots (.png)
-      img/               ← error/progress screenshots
-    notes.md             ← freeform notes
+dev-tracker\
+├── README.md                          ← Journal template + section examples + quick ref
+├── CLAUDE.md                          ← AI assistant session rules & command triggers
+├── scripts\
+│   └── review-deck-build.js           ← PPTX build script for performance reviews
+├── output\
+│   └── Fandi_4Month_Review_2026.pptx  ← Latest generated performance review deck
+├── journals\
+│   └── YYYY\MM\YYYY-MM-DD.md          ← Compiled immutable daily journal files
+└── activity\
+    └── YYYY-MM-DD\                    ← One folder per working day
+        ├── <topic>\                   ← kebab-case, short descriptive name
+        │   ├── files\               ← Source artifacts (.html v1, v2, fix)
+        │   ├── storybook\             ← Storybook HTML samples
+        │   ├── component\             ← Component screenshots (.png)
+        │   └── img\                   ← Error / progress screenshots
+        └── notes.md                   ← Daily plan + scratchpad
 ```
+
+---
+
+## 🔄 Daily Workflow & Automation
+
+The lifecycle of each working day follows a predictable, structured pattern combining manual engineering notes with automated AI journal compilation.
+
+```
+Morning  → /daily-tracker          Startup briefing + create notes.md if missing
+During   → Work, save files        activity\<date>\<topic>\files\, img\, notes.md
+EOD      → /journal today          Generate journal file in journals\YYYY\MM\
+           /send today             Send/sync journal file
+```
+
+### Core Workflow: Generating a Daily Journal (`/journal <date>`)
+1. **Read Inputs:** Read ALL files inside `activity\YYYY-MM-DD\` (`.md`, `.html`); open `.png` screenshots to inspect visual completion states.
+2. **Diff Analysis:** Diff `v1` vs `v2` files to explicitly identify what changed and why.
+3. **Classification:** Match each distinct task block to an **Activity Type** and select the appropriate **Feeling Enum**.
+4. **Compile:** Write `journals\YYYY\MM\YYYY-MM-DD.md` strictly following the template. Each distinct topic maps to one part (`Part 1`, `Part 2`, etc.).
+5. **Fallback:** If no `activity\` directory exists for the date, fall back to the `Current Work` section in this file.
+
+---
+
+## 🌿 Git Commit Standards
+
+All commits within the repository must adhere to typed prefixes and strict formatting rules.
+
+### Commit Types
+
+| Type | When to use |
+|---|---|
+| `track:` | Activity folders, journal `.md` files, `notes.md` |
+| `docs:` | `README.md`, `CLAUDE.md`, documentation updates |
+| `refactor:` | Renaming or restructuring files/folders |
+| `chore:` | Configuration, `.gitignore`, tooling, dependency updates |
+| `fix:` | Correcting a bug or error in an existing file |
+| `feat:` | Adding a new feature or capability |
+| `style:` | Formatting only (whitespace, indentation, no logic change) |
+| `perf:` | Performance improvements |
+| `test:` | Adding or correcting test suites |
+| `revert:` | Reverting a previous commit |
+
+### Formatting Rules
+- **Subject line:** Format as `<type>: <Capitalized short summary>` — **≤ 50 characters**.
+- **Mood:** Imperative mood ("Add", "Update", "Fix", not "Added" or "Fixed"). No trailing period.
+- **Body:** Blank line separator, wrapped at 72 characters, structured with `- What:` and `- Why:` bullet points.
+- **Granularity:** A day's activity folder and its compiled journal are **separate `track:` commits** (activity committed first, followed by the journal).
+- **Empty-Stub Guard:** A journal file that exists as an empty or 1-line stub is **not generated**—treat as missing and backfill from the activity folder.
+
+#### PowerShell Commit Example
+```powershell
+$msg = "track: Log daily development activities for feature module
+
+- What: Added activity folder with v1/v2 html diffs and screenshots
+- Why: Complete daily tracking requirement before journal generation
+- Journal: journals/2026/05/2026-05-23.md"
+git commit -m $msg
+```
+> *Note:* Avoid `@'...'@` here-strings in PowerShell to prevent injecting a leading `@` into GitHub commit subjects.
 
 ---
 
@@ -66,34 +130,28 @@ activity/
 
 ---
 
-## 🏷️ Activity Type Patterns
+## 🏷️ Activity Type Patterns & Status Badges
 
-| Type | Typical Activity label |
-|------|------------------------|
-| Component work | `Development — <Component Name(s)>` |
-| Install / setup | `<Env> Installation — <subtitle>` |
-| Bug fixes | `Bug Fix Tracker` |
-| Writing docs | `Documentation — <Doc Name>` |
-| Other-project support | `Support — <PROJECT> : <Task>` |
-| Code commit / review | `Code Review & Commit` |
+### Activity Type Labels
+- Component work: `Development — <Component Name(s)>`
+- Install / setup: `<Env> Installation — <subtitle>`
+- Bug fixes: `Bug Fix Tracker`
+- Writing docs: `Documentation — <Doc Name>`
+- Other-project support: `Support — <PROJECT> : <Task>`
+- Code commit / review: `Code Review & Commit`
 
----
-
-## 🔖 Status Badges
-
-Use inline in Description when a task spans multiple days:
-
-```
-Status: ✅ Done
-Status: 🔄 On Progress
-Status: ❌ Blocked — <reason>
-Status: 🔄 On Progress (Continued from <date>)
-```
+### Inline Status Badges
+Use these status markers inline within task descriptions when work spans multiple sessions or days:
+- `Status: ✅ Done`
+- `Status: 🔄 On Progress`
+- `Status: ❌ Blocked — <reason>`
+- `Status: 🔄 On Progress (Continued from <date>)`
 
 ---
 
 ## 📝 Journal Template
 
+```markdown
 ======================================================================================================================
 
 🧾 Daily Journal
@@ -148,16 +206,14 @@ Description:
 ― <Author>
 
 ======================================================================================================================
+```
 
 ---
 
 ## 📐 Section Examples by Activity Type
 
----
-
-### Development (v1 → v2 diff)
-
-```
+### Development (v1 → v2 Diff Pattern)
+```markdown
 Activity: Development — <Component Name(s)>
 Description:
 
@@ -173,11 +229,8 @@ Description:
             v2: <new approach and benefit>
 ```
 
----
-
 ### Environment Setup / Installation
-
-```
+```markdown
 Activity: Environment Installation — <subtitle>
 Description:
     New Laptop (Windows) — Environment Local Setup
@@ -191,11 +244,8 @@ Description:
         - Next step: <what to try next>
 ```
 
----
-
 ### Bug Fix Tracker
-
-```
+```markdown
 Activity: Bug Fix Tracker
 Description:
     - <ID>: <Page / Component> : <Issue description>
@@ -206,11 +256,8 @@ Description:
         Status: ✅ Done
 ```
 
----
-
 ### Documentation
-
-```
+```markdown
 Activity: Documentation — <Doc Name>
 Description:
     Document: <filename.md or .pdf>
@@ -221,11 +268,8 @@ Description:
         <important discovery that affects implementation>
 ```
 
----
-
 ### Support (Other Project)
-
-```
+```markdown
 Activity: Support — <PROJECT NAME> : <Task>
 Description:
     Project: <Project> — <Task description>
@@ -241,7 +285,7 @@ Description:
 
 ---
 
-### URL Encoding Quick Reference
+## 🔣 URL Encoding Quick Reference
 
 | Char | Encoded | Char | Encoded |
 |------|---------|------|---------|
@@ -256,6 +300,4 @@ Description:
 | 🔄 | `%F0%9F%94%84` | ⚠️ | `%E2%9A%A0%EF%B8%8F` |
 | ⭐ | `%E2%AD%90` | 🎯 | `%F0%9F%8E%AF` |
 | 💤 | `%F0%9F%92%A4` | ❤️ | `%E2%9D%A4%EF%B8%8F` |
-| ☕ | `%E2%98%95` | | |
-
-======================================================================================================================
+| ☕ | `%E2%88%95` | | |
